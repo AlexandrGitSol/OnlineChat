@@ -30,14 +30,14 @@ void broadcast_message(const string& message, tcp::socket* sender = nullptr) {
                 client->write_some(asio::buffer(message));
             }
             catch (...) {
-                // Игнорируем ошибки отправки
+                // РРіРЅРѕСЂРёСЂСѓРµРј РѕС€РёР±РєРё РѕС‚РїСЂР°РІРєРё
             }
         }
     }
 }
 
 void handle_client(tcp::socket socket, int id) {
-    cout << "Клиент " << id << " подключен" << endl;
+    cout << "РљР»РёРµРЅС‚ " << id << " РїРѕРґРєР»СЋС‡РµРЅ" << endl;
 
     auto client_socket = make_shared<tcp::socket>(std::move(socket));
 
@@ -54,7 +54,7 @@ void handle_client(tcp::socket socket, int id) {
 
             if (ec) {
                 if (ec == asio::error::eof) {
-                    cout << "Клиент " << id << " отключился" << endl;
+                    cout << "РљР»РёРµРЅС‚ " << id << " РѕС‚РєР»СЋС‡РёР»СЃСЏ" << endl;
                 }
                 break;
             }
@@ -62,24 +62,24 @@ void handle_client(tcp::socket socket, int id) {
             if (len > 0) {
                 string message(buffer, len);
 
-                // Убираем символ новой строки, если есть
+                // РЈР±РёСЂР°РµРј СЃРёРјРІРѕР» РЅРѕРІРѕР№ СЃС‚СЂРѕРєРё, РµСЃР»Рё РµСЃС‚СЊ
                 if (!message.empty() && message.back() == '\n') {
                     message.pop_back();
                 }
 
-                string formatted_msg = "Клиент " + std::to_string(id) + ": " + message + "\n";
+                string formatted_msg = "РљР»РёРµРЅС‚ " + std::to_string(id) + ": " + message + "\n";
                 cout << formatted_msg;
 
-                // Отправляем всем остальным клиентам
+                // РћС‚РїСЂР°РІР»СЏРµРј РІСЃРµРј РѕСЃС‚Р°Р»СЊРЅС‹Рј РєР»РёРµРЅС‚Р°Рј
                 broadcast_message(formatted_msg, client_socket.get());
             }
         }
     }
     catch (const std::exception& e) {
-        cout << "Ошибка с клиентом " << id << ": " << e.what() << endl;
+        cout << "РћС€РёР±РєР° СЃ РєР»РёРµРЅС‚РѕРј " << id << ": " << e.what() << endl;
     }
 
-    // Удаляем клиента из списка
+    // РЈРґР°Р»СЏРµРј РєР»РёРµРЅС‚Р° РёР· СЃРїРёСЃРєР°
     {
         lock_guard<mutex> lock(clients_mutex);
         auto it = std::remove_if(clients.begin(), clients.end(),
@@ -94,7 +94,7 @@ int main() {
         asio::io_context io_context;
         tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 45555));
 
-        cout << "Сервер запущен на порту 45555" << endl;
+        cout << "РЎРµСЂРІРµСЂ Р·Р°РїСѓС‰РµРЅ РЅР° РїРѕСЂС‚Сѓ 45555" << endl;
 
         vector<thread> client_threads;
         int client_id = 1;
@@ -105,7 +105,7 @@ int main() {
 
             client_threads.emplace_back(handle_client, std::move(socket), client_id++);
 
-            // Очищаем завершенные потоки
+            // РћС‡РёС‰Р°РµРј Р·Р°РІРµСЂС€РµРЅРЅС‹Рµ РїРѕС‚РѕРєРё
             client_threads.erase(
                 std::remove_if(client_threads.begin(), client_threads.end(),
                     [](thread& t) { return !t.joinable(); }),
@@ -118,7 +118,7 @@ int main() {
         }
     }
     catch (const std::exception& e) {
-        cout << "Ошибка сервера: " << e.what() << endl;
+        cout << "РћС€РёР±РєР° СЃРµСЂРІРµСЂР°: " << e.what() << endl;
     }
 
     return 0;

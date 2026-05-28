@@ -26,10 +26,10 @@ void receive_messages(tcp::socket& socket, atomic<bool>& running) {
 
             if (ec) {
                 if (ec == asio::error::eof) {
-                    cout << "\nСоединение закрыто сервером" << endl;
+                    cout << "\nРЎРѕРµРґРёРЅРµРЅРёРµ Р·Р°РєСЂС‹С‚Рѕ СЃРµСЂРІРµСЂРѕРј" << endl;
                 }
                 else {
-                    cout << "\nОшибка чтения: " << ec.message() << endl;
+                    cout << "\nРћС€РёР±РєР° С‡С‚РµРЅРёСЏ: " << ec.message() << endl;
                 }
                 running = false;
                 break;
@@ -43,7 +43,7 @@ void receive_messages(tcp::socket& socket, atomic<bool>& running) {
         }
     }
     catch (const std::exception& e) {
-        cout << "\nИсключение в потоке приема: " << e.what() << endl;
+        cout << "\nРСЃРєР»СЋС‡РµРЅРёРµ РІ РїРѕС‚РѕРєРµ РїСЂРёРµРјР°: " << e.what() << endl;
         running = false;
     }
 }
@@ -62,13 +62,13 @@ void send_messages(tcp::socket& socket, atomic<bool>& running) {
             }
 
             if (!message.empty()) {
-                // Добавляем перевод строки
+                // Р”РѕР±Р°РІР»СЏРµРј РїРµСЂРµРІРѕРґ СЃС‚СЂРѕРєРё
                 message += "\n";
                 asio::error_code ec;
                 socket.write_some(asio::buffer(message.data(), message.size()), ec);
 
                 if (ec) {
-                    cout << "Ошибка отправки: " << ec.message() << endl;
+                    cout << "РћС€РёР±РєР° РѕС‚РїСЂР°РІРєРё: " << ec.message() << endl;
                     running = false;
                     break;
                 }
@@ -76,7 +76,7 @@ void send_messages(tcp::socket& socket, atomic<bool>& running) {
         }
     }
     catch (const std::exception& e) {
-        cout << "\nИсключение в потоке отправки: " << e.what() << endl;
+        cout << "\nРСЃРєР»СЋС‡РµРЅРёРµ РІ РїРѕС‚РѕРєРµ РѕС‚РїСЂР°РІРєРё: " << e.what() << endl;
         running = false;
     }
 }
@@ -87,17 +87,17 @@ int main() {
         asio::io_context io_context;
         tcp::socket socket(io_context);
 
-        cout << "Подключение к серверу..." << endl;
+        cout << "РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє СЃРµСЂРІРµСЂСѓ..." << endl;
         socket.connect(tcp::endpoint(asio::ip::make_address("127.0.0.1"), 45555));
 
-        cout << "Подключено к серверу!" << endl;
-        cout << "Для выхода введите 'exit' или нажмите Ctrl+C\n" << endl;
+        cout << "РџРѕРґРєР»СЋС‡РµРЅРѕ Рє СЃРµСЂРІРµСЂСѓ!" << endl;
+        cout << "Р”Р»СЏ РІС‹С…РѕРґР° РІРІРµРґРёС‚Рµ 'exit' РёР»Рё РЅР°Р¶РјРёС‚Рµ Ctrl+C\n" << endl;
 
         atomic<bool> running(true);
         thread receiver(receive_messages, std::ref(socket), std::ref(running));
         thread sender(send_messages, std::ref(socket), std::ref(running));
 
-        // Ждем завершения потоков
+        // Р–РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ РїРѕС‚РѕРєРѕРІ
         receiver.join();
         sender.join();
 
@@ -105,10 +105,10 @@ int main() {
             socket.close();
         }
 
-        cout << "Клиент завершен." << endl;
+        cout << "РљР»РёРµРЅС‚ Р·Р°РІРµСЂС€РµРЅ." << endl;
     }
     catch (const std::exception& e) {
-        cout << "Ошибка: " << e.what() << endl;
+        cout << "РћС€РёР±РєР°: " << e.what() << endl;
     }
 
     return 0;

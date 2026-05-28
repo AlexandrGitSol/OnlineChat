@@ -3,6 +3,8 @@ client/client.vcxproj.user
 client/client/
 client/Debug/
 client/.vs/
+.vscode/
+build/
 
 server/.vs/
 server/x64/
